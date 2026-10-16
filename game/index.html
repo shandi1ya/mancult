@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <script>if (/\/game$/.test(location.pathname)) location.replace(location.pathname + '/' + location.search + location.hash);</script>
+  <title>Red's Delivery Run</title>
+  <meta name="description" content="Fly Red, the owl messenger, across campus and deliver the mail.">
+  <meta name="theme-color" content="#fbfbf9">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="stage">
+      <canvas id="cv" aria-label="Red's Delivery Run game"></canvas>
+
+      <div id="hud" hidden>
+        <div class="hud-group">
+          <div id="hearts" aria-label="Lives"></div>
+          <div id="carry" aria-label="Letters carried"></div>
+          <div id="powers"></div>
+        </div>
+        <div class="hud-group hud-mid">
+          <span id="lvlName"></span>
+          <div class="prog"><i id="progBar"></i></div>
+        </div>
+        <div class="hud-group hud-right">
+          <span id="combo"></span>
+          <span id="score">0</span>
+          <button id="pauseBtn" class="icon-btn" type="button" aria-label="Pause">II</button>
+        </div>
+      </div>
+
+      <p id="hint" hidden>Tap, click or press Space to flap</p>
+    </div>
+
+    <!-- Loading -->
+    <section id="loading" class="screen solid">
+      <div class="load-inner">
+        <canvas id="loadRed" width="11" height="11" aria-hidden="true"></canvas>
+        <p class="eyebrow">Red is packing the mail</p>
+        <div class="load-bar"><i id="loadBar"></i></div>
+      </div>
+      <div class="ticker" aria-hidden="true">
+        <div class="track">
+          <span>Brand identity</span><b>·</b><span>Event branding</span><b>·</b><span>Posters</span><b>·</b><span>Mascots</span><b>·</b><span>Merch</span><b>·</b><span>UI/UX</span><b>·</b>
+          <span>Brand identity</span><b>·</b><span>Event branding</span><b>·</b><span>Posters</span><b>·</b><span>Mascots</span><b>·</b><span>Merch</span><b>·</b><span>UI/UX</span><b>·</b>
+        </div>
+      </div>
+    </section>
+
+    <!-- Title menu -->
+    <section id="menu" class="screen" hidden>
+      <div class="panel">
+        <p class="eyebrow">A game starring Red</p>
+        <h1>Red's Delivery Run</h1>
+        <nav class="menu-list">
+          <button type="button" class="menu-item scramble" data-act="play">Play</button>
+          <button type="button" class="menu-item scramble" data-act="sound" id="soundBtn">Sound: on</button>
+          <button type="button" class="menu-item scramble" data-act="eggs" id="eggsBtn" hidden>Eggs found 0/8</button>
+        </nav>
+        <aside class="promo" aria-label="About the designer">
+          <p class="promo-eyebrow">Designed by Amritanshu</p>
+          <p class="promo-title">Every poster in this game is real work.</p>
+          <div class="promo-row">
+            <a class="promo-cta" href="../index.html"><span class="scramble">See the portfolio</span></a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Level select -->
+    <section id="levels" class="screen" hidden>
+      <div class="panel">
+        <p class="eyebrow">Choose a route</p>
+        <h2>Where to, Red?</h2>
+        <nav class="menu-list" id="levelList"></nav>
+        <button type="button" class="chip" data-act="menu">Back</button>
+      </div>
+    </section>
+
+    <!-- Pause -->
+    <section id="pause" class="screen dim" hidden>
+      <div class="panel center">
+        <h2>Paused</h2>
+        <div class="row">
+          <button type="button" class="chip primary" data-act="resume">Resume</button>
+          <button type="button" class="chip" data-act="restart">Restart</button>
+          <button type="button" class="chip" data-act="menu">Menu</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Result -->
+    <section id="result" class="screen dim" hidden>
+      <div class="panel center">
+        <p class="eyebrow" id="resultEyebrow"></p>
+        <h2 id="resultTitle"></h2>
+        <dl id="resultStats" class="stats"></dl>
+        <div class="row">
+          <button type="button" class="chip primary" id="resultPrimary"></button>
+          <button type="button" class="chip" data-act="menu">Menu</button>
+        </div>
+        <a class="result-promo" href="../index.html">See the work behind the game &rarr;</a>
+      </div>
+    </section>
+
+    <!-- Eggs -->
+    <section id="eggs" class="screen dim" hidden>
+      <div class="panel wide">
+        <p class="eyebrow" id="eggsCount"></p>
+        <h2>Found so far</h2>
+        <ol id="eggList" class="egg-list"></ol>
+        <button type="button" class="chip" data-act="menu">Back</button>
+      </div>
+    </section>
+
+    <!-- Final letter -->
+    <section id="letter" class="screen dim" hidden>
+      <div class="envelope" id="envelope">
+        <div class="env-body"></div>
+        <div class="env-flap"></div>
+        <article class="paper">
+          <p class="eyebrow">Delivered by Red</p>
+          <h2>I'll deliver it.</h2>
+          <p class="mail" id="mailText"></p>
+          <p class="tagline" id="tagline"></p>
+          <div class="row">
+            <button type="button" class="chip primary" id="copyMail">Copy email</button>
+            <a class="chip" id="mailLink" href="#">Write an email</a>
+          </div>
+          <div class="row">
+            <button type="button" class="chip" data-act="menu">Menu</button>
+            <a class="chip" href="../index.html">Back to portfolio</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+  </div>
+  <div id="cursor" aria-hidden="true"></div>
+
+  <script src="game.js"></script>
+</body>
+</html>
